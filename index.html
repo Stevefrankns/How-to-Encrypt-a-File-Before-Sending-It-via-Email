@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How to Encrypt a File Before Sending It via Email</title>
+<meta content="Learn how to encrypt files for email securely. Step-by-step guides for PDFs, Word docs, and ZIPs to protect sensitive attachments before sending." name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --color-hero-bg: #080808;
+      --color-primary-accent: #A855F7;
+      --color-secondary-accent: rgba(168, 85, 247, 0.14);
+      --color-content-bg: #080808;
+      --color-body-text: #E8E8FF;
+      --color-heading-text: #FFFFFF;
+      --color-border: rgba(232, 232, 255, 0.14);
+      --color-meta-text: rgba(232, 232, 255, 0.72);
+      --color-saas-bg: #080808;
+      --color-light-bg: #F0F0F8;
+      --color-light-surface: #FFFFFF;
+      --color-light-text: #0A0A14;
+      --surface: #111118;
+      --surface-2: rgba(17, 17, 24, 0.82);
+      --holo-gradient: linear-gradient(135deg, #FF0080, #FF8C00, #FFE600, #00FF88, #00CFFF, #A855F7);
+      --holo-conic: conic-gradient(from var(--mouse-angle, 135deg), #FF0080, #FF8C00, #FFE600, #00FF88, #00CFFF, #A855F7, #FF0080);
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --max-reading-width: 760px;
+      --max-wide-width: 1180px;
+      --section-padding-v: 86px;
+      --radius-card: 22px;
+      --shadow-card: 0 24px 70px rgba(0,0,0,0.28);
+      --transition-speed: 0.28s;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      color: var(--color-body-text);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(168, 85, 247, 0.14), transparent 26rem),
+        radial-gradient(circle at 84% 18%, rgba(0, 207, 255, 0.12), transparent 28rem),
+        var(--color-content-bg);
+      line-height: 1.72;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -40%;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.06;
+      background: conic-gradient(from 90deg, #FF0080, #FF8C00, #FFE600, #00FF88, #00CFFF, #A855F7, #FF0080);
+      filter: blur(60px);
+      animation: slowSpin 26s linear infinite;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      color: var(--color-heading-text);
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+    }
+    a { color: inherit; text-decoration: none; transition: all var(--transition-speed); }
+    a:hover { color: var(--color-primary-accent); }
+    img { max-width: 100%; height: auto; display: block; }
+    ul, ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+    p { margin-bottom: 1.5rem; }
+
+    .container { max-width: var(--max-reading-width); margin: 0 auto; padding: 0 24px; }
+    .container-wide { max-width: var(--max-wide-width); margin: 0 auto; padding: 0 24px; }
+    .section { padding: var(--section-padding-v) 0; position: relative; }
+    .section-tint {
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255, 0, 128, 0.06), transparent 20rem),
+        radial-gradient(circle at 86% 28%, rgba(0, 255, 136, 0.06), transparent 22rem),
+        var(--color-light-bg);
+      color: var(--color-light-text);
+    }
+    .section-tint h1,
+    .section-tint h2,
+    .section-tint h3,
+    .section-tint h4 { color: var(--color-light-text); }
+    .section-tint .lead,
+    .section-tint p,
+    .section-tint li { color: rgba(10,10,20,0.78); }
+    .section-tint a:not(.btn) { color: #6932c9; }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px;
+      background: var(--holo-gradient);
+      width: 0%; z-index: 1000; transition: width 0.1s;
+      box-shadow: 0 0 22px rgba(168, 85, 247, 0.75);
+    }
+
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8, 8, 8, 0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--color-border);
+      transition: box-shadow var(--transition-speed), background var(--transition-speed);
+    }
+    header.scrolled {
+      background: rgba(8, 8, 8, 0.94);
+      box-shadow: 0 18px 42px rgba(0,0,0,0.35);
+    }
+    .header-inner {
+      display: flex; justify-content: space-between; align-items: center;
+      min-height: 74px; max-width: 1200px; margin: 0 auto; padding: 0 24px; gap: 22px;
+    }
+    .site-brand {
+      font-family: var(--font-heading);
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+    .brand-mark {
+      width: 42px; height: 42px; min-width: 42px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 14px;
+      background: var(--holo-conic);
+      padding: 2px;
+      box-shadow: 0 0 30px rgba(168,85,247,0.42);
+      animation: holoAngle 8s linear infinite;
+    }
+    .brand-mark svg {
+      width: 100%; height: 100%;
+      display: block;
+      border-radius: 12px;
+      background: #0a0a14;
+      padding: 7px;
+    }
+    .nav-links { display: flex; gap: 26px; align-items: center; }
+    .nav-links a {
+      font-size: 13px; font-weight: 700; color: rgba(232,232,255,0.72);
+      letter-spacing: 0.02em;
+    }
+    .nav-links a:hover { color: #fff; text-shadow: 0 0 14px rgba(168,85,247,0.7); }
+    .header-cta {
+      font-size: 13px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: linear-gradient(#080808, #080808) padding-box, var(--holo-gradient) border-box;
+      border: 1.5px solid transparent;
+    }
+    .header-cta:hover { transform: translateY(-1px); color: #fff; box-shadow: 0 0 26px rgba(168,85,247,0.38); }
+
+    .menu-toggle {
+      display: none; background: none; border: 1px solid var(--color-border);
+      border-radius: 12px; padding: 8px 10px; font-size: 22px; cursor: pointer; color: #fff;
+    }
+
+    .hero {
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255, 0, 128, 0.16), transparent 24rem),
+        radial-gradient(circle at 92% 20%, rgba(0, 255, 136, 0.12), transparent 26rem),
+        linear-gradient(180deg, rgba(168,85,247,0.08), transparent 45%),
+        #080808;
+      padding-top: 84px;
+      padding-bottom: 84px;
+      border-bottom: 1px solid var(--color-border);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background: conic-gradient(from 180deg at 50% 50%, transparent, #FF0080, transparent, #00FF88, transparent, #A855F7, transparent);
+      opacity: 0.06;
+      animation: slowSpin 22s linear infinite;
+    }
+    .hero .container {
+      position: relative; z-index: 2;
+      max-width: var(--max-wide-width);
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.92fr);
+      gap: 52px;
+      align-items: center;
+    }
+    .breadcrumb {
+      font-size: 12px; color: rgba(232,232,255,0.66); margin-bottom: 24px;
+      text-transform: uppercase; letter-spacing: 0.16em; font-weight: 800;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 5.6vw, 58px);
+      margin-bottom: 24px;
+      letter-spacing: -0.03em;
+      max-width: 820px;
+    }
+    .holo-text,
+    .hero h1 span,
+    .holo-counter.counting {
+      background: var(--holo-gradient);
+      background-size: 240% 240%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: holoShift 6s ease infinite;
+    }
+    .hero-intro {
+      font-size: 20px; color: rgba(232,232,255,0.76); margin-bottom: 32px; line-height: 1.65;
+      max-width: 720px;
+    }
+    .meta-bar {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      font-size: 13px; color: rgba(232,232,255,0.72);
+      border-top: 1px solid var(--color-border); padding-top: 18px; margin-bottom: 34px;
+    }
+    .meta-bar span {
+      display: inline-flex;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+    }
+    .quick-answer {
+      background: rgba(17,17,24,0.86);
+      border: 1px solid transparent;
+      background-image: linear-gradient(#111118, #111118), var(--holo-gradient);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      padding: 26px 30px;
+      border-radius: var(--radius-card);
+      margin-bottom: 0;
+      box-shadow: var(--shadow-card);
+    }
+    .qa-label {
+      font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.18em;
+      color: var(--color-primary-accent); margin-bottom: 12px; display: block;
+    }
+    .quick-answer p { margin: 0; font-weight: 600; font-size: 18px; color: rgba(232,232,255,0.86); }
+
+    .hero .breadcrumb,
+    .hero h1,
+    .hero-intro,
+    .meta-bar,
+    .quick-answer { grid-column: 1; }
+    .hero-visual {
+      grid-column: 2;
+      grid-row: 1 / span 5;
+      align-self: stretch;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      margin: 56px 0 24px;
+      border-bottom: 1px solid currentColor;
+      border-image: var(--holo-gradient) 1;
+      padding-bottom: 18px;
+    }
+    h3 { font-size: 24px; margin: 36px 0 16px; }
+    h4 { font-size: 18px; margin: 24px 0 12px; }
+    .lead { font-size: 19px; color: rgba(232,232,255,0.74); font-weight: 600; }
+
+    .card,
+    .method-picker,
+    .accordion-item,
+    .mockup-container {
+      background: rgba(17,17,24,0.9);
+      border-radius: var(--radius-card);
+      padding: 32px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid rgba(232,232,255,0.13);
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before,
+    .method-picker::before,
+    .accordion-item::before {
+      content: "";
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: var(--holo-gradient);
+    }
+    .section-tint .card,
+    .section-tint .method-picker,
+    .section-tint .accordion-item {
+      background: rgba(255,255,255,0.88);
+      color: var(--color-light-text);
+      border-color: rgba(10,10,20,0.1);
+      box-shadow: 0 18px 45px rgba(10,10,20,0.08);
+    }
+
+    .tilt-card {
+      transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+      transition: transform 150ms ease, box-shadow 250ms ease;
+      will-change: transform;
+    }
+    .tilt-card::after,
+    .holo-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      background:
+        linear-gradient(var(--mouse-angle, 135deg), transparent 24%, rgba(255,255,255,0.24), transparent 58%);
+      transition: opacity 250ms ease;
+      mix-blend-mode: screen;
+    }
+    .tilt-card:hover::after,
+    .holo-card:hover::after { opacity: 1; }
+
+    .btn {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 13px 24px; border-radius: 999px; font-weight: 800; font-size: 15px;
+      cursor: pointer; border: 1.5px solid transparent; isolation: isolate;
+    }
+    .btn::after,
+    .header-cta::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -100%;
+      width: 45%;
+      height: 200%;
+      background: linear-gradient(115deg, transparent, rgba(255,255,255,0.52), transparent);
+      transform: rotate(18deg);
+      transition: left 500ms ease;
+      pointer-events: none;
+    }
+    .btn:hover::after,
+    .header-cta:hover::after { left: 200%; }
+    .btn-outline {
+      background: linear-gradient(#080808, #080808) padding-box, var(--holo-gradient) border-box;
+      border-color: transparent;
+      color: #fff;
+    }
+    .section-tint .btn-outline { background: linear-gradient(#fff, #fff) padding-box, var(--holo-gradient) border-box; color: #6d2dd1; }
+    .btn-outline:hover { color: #fff; background: var(--holo-gradient); box-shadow: 0 0 28px rgba(168,85,247,0.38); }
+    .btn-solid {
+      background: var(--holo-gradient);
+      color: #fff;
+      box-shadow: 0 0 32px rgba(168,85,247,0.42);
+    }
+    .btn-solid:hover { transform: translateY(-2px); color: #fff; box-shadow: 0 0 42px rgba(255,0,128,0.36); }
+
+    .content-image {
+      position: relative;
+      margin: 34px 0;
+      padding: 12px;
+      border-radius: 24px;
+      background: linear-gradient(#111118, #111118) padding-box, var(--holo-gradient) border-box;
+      border: 2px solid transparent;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .section-tint .content-image {
+      background: linear-gradient(#ffffff, #ffffff) padding-box, var(--holo-gradient) border-box;
+      box-shadow: 0 18px 45px rgba(10,10,20,0.1);
+    }
+    .content-image img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      max-height: 520px;
+    }
+    .hero-visual img { max-height: 480px; object-fit: contain; }
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      align-items: center;
+    }
+    .image-grid .content-image { margin: 0; }
+    .product-stack {
+      display: grid;
+      grid-template-columns: 1.4fr 0.7fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .product-stack .content-image { margin: 0; }
+    .product-stack .content-image:last-child img { max-height: 360px; }
+
+    .saas-moment {
+      background:
+        radial-gradient(circle at 18% 20%, rgba(168,85,247,0.26), transparent 28rem),
+        radial-gradient(circle at 82% 30%, rgba(0,255,136,0.16), transparent 26rem),
+        #080808;
+      color: #fff;
+      padding: 108px 0;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .saas-moment::before {
+      content: ''; position: absolute; inset: -40%;
+      background: conic-gradient(from var(--mouse-angle, 0deg), #FF0080, #FF8C00, #FFE600, #00FF88, #00CFFF, #A855F7, #FF0080);
+      opacity: 0.06;
+      pointer-events: none;
+      animation: slowSpin 24s linear infinite;
+    }
+    .saas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; position: relative; z-index: 2; }
+    .saas-moment h2 { color: #fff; border: none; padding: 0; margin-top: 0; font-size: clamp(30px, 4vw, 44px); }
+    .saas-moment .lead { color: rgba(255,255,255,0.8); }
+    .mockup-container {
+      padding: 16px;
+      border: 2px solid transparent;
+      background: linear-gradient(#111118, #111118) padding-box, var(--holo-gradient) border-box;
+    }
+    .feature-chip {
+      background: rgba(255,255,255,0.08); padding: 9px 16px; border-radius: 30px;
+      font-size: 14px; font-weight: 700; display: inline-block; margin: 0 8px 8px 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .holo-badge {
+      position: relative;
+      color: #fff;
+      background: var(--holo-conic);
+      box-shadow: 0 0 28px rgba(168,85,247,0.32);
+      animation: holoAngle 5s linear infinite;
+      transform: rotate(-2deg);
+    }
+    .saas-actions { display: flex; gap: 16px; margin-top: 32px; flex-wrap: wrap; }
+
+    .comparison-table {
+      width: 100%; border-collapse: collapse; margin: 32px 0; overflow: hidden;
+      background: #111118; border-radius: var(--radius-card); box-shadow: var(--shadow-card);
+      border: 1px solid rgba(232,232,255,0.12);
+    }
+    .comparison-table th, .comparison-table td { padding: 18px 22px; text-align: left; border-bottom: 1px solid rgba(232,232,255,0.12); }
+    .comparison-table th {
+      background: var(--holo-gradient);
+      font-family: var(--font-heading); font-weight: 700; color: #07070d;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+    }
+    .comparison-table td { color: rgba(232,232,255,0.86); }
+    .comparison-table tr:last-child td { border-bottom: none; }
+    .comparison-table .highlight-row {
+      background: linear-gradient(90deg, rgba(168,85,247,0.22), rgba(17,17,24,0.98));
+      box-shadow: inset 4px 0 0 #A855F7;
+    }
+    .section-tint .comparison-table { background: #111118; }
+    .badge { padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .badge-high { background: rgba(0,255,136,0.16); color: #00FF88; border: 1px solid rgba(0,255,136,0.35); }
+    .badge-med { background: rgba(255,230,0,0.14); color: #FFE600; border: 1px solid rgba(255,230,0,0.35); }
+    .badge-low { background: rgba(255,0,128,0.14); color: #FF5EB6; border: 1px solid rgba(255,0,128,0.35); }
+
+    .accordion-header {
+      width: 100%; text-align: left; padding: 22px 24px; background: none; border: none;
+      font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: inherit;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    }
+    .accordion-header::after { content: '+'; font-size: 26px; color: var(--color-primary-accent); transition: transform 0.3s; }
+    .accordion-header[aria-expanded="true"]::after { transform: rotate(45deg); }
+    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; padding: 0 24px; }
+    .accordion-content-inner { padding-bottom: 22px; }
+
+    .method-picker { text-align: center; }
+    .picker-options { display: flex; gap: 16px; justify-content: center; margin: 26px 0; flex-wrap: wrap; }
+    .picker-btn {
+      padding: 12px 20px; border: 2px solid rgba(168,85,247,0.22); border-radius: 999px;
+      background: rgba(255,255,255,0.04); color: inherit; font-family: var(--font-body);
+      font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s;
+    }
+    .section-tint .picker-btn { background: rgba(255,255,255,0.8); color: #0A0A14; }
+    .picker-btn:hover, .picker-btn.active {
+      border-color: transparent; background: var(--holo-gradient); color: #fff;
+      box-shadow: 0 0 28px rgba(168,85,247,0.24);
+    }
+    .picker-result {
+      margin-top: 24px; padding: 24px; background: rgba(255,255,255,0.05);
+      border-radius: 18px; display: none; text-align: left; border: 1px solid rgba(232,232,255,0.1);
+    }
+    .section-tint .picker-result { background: rgba(10,10,20,0.04); border-color: rgba(10,10,20,0.08); }
+    .picker-result.visible { display: block; animation: fadeIn 0.3s; }
+
+    .code-block {
+      position: relative; background: #05050a; border-radius: 18px; margin: 24px 0;
+      border: 1px solid rgba(232,232,255,0.12);
+      overflow: hidden;
+    }
+    .code-block::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--holo-gradient); }
+    .code-block pre { margin: 0; padding: 26px; overflow-x: auto; color: #E8E8FF; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 14px; }
+    .copy-btn {
+      position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12); color: #fff; padding: 7px 12px;
+      border-radius: 999px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.18); }
+
+    .prismatic-divider {
+      line-height: 0;
+      background: transparent;
+      margin: -1px 0;
+      overflow: hidden;
+    }
+    .prismatic-divider svg { display: block; width: 100%; height: 72px; }
+    .prismatic-divider path {
+      fill: none;
+      stroke: url(#holoStroke);
+      stroke-width: 4;
+      stroke-dasharray: 1400;
+      stroke-dashoffset: 1400;
+      opacity: 0.72;
+      transition: stroke-dashoffset 1.2s ease;
+    }
+    .prismatic-divider.in-view path { stroke-dashoffset: 0; }
+
+    .holo-counter.done { color: var(--color-primary-accent); }
+    footer {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(168,85,247,0.18), transparent 22rem),
+        #080808;
+      color: #E8E8FF;
+      padding: 70px 0 34px;
+      font-size: 14px;
+      border-top: 1px solid var(--color-border);
+    }
+    footer a { color: #fff; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(168,85,247,0.55); }
+    footer a:hover { text-decoration-color: #fff; }
+    .footer-grid { display: grid; grid-template-columns: 1.25fr repeat(2, minmax(180px, 1fr)); gap: 48px; margin-bottom: 48px; }
+    .footer-disclosure { padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(232,232,255,0.66); font-size: 13px; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes holoShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    @keyframes slowSpin { to { transform: rotate(360deg); } }
+    @keyframes holoAngle { to { --mouse-angle: 495deg; } }
+
+    @media (max-width: 980px) {
+      .nav-links, .header-cta { display: none; }
+      .menu-toggle { display: block; }
+      .nav-links.active {
+        display: flex; flex-direction: column; align-items: flex-start; position: absolute; top: 74px; left: 16px; right: 16px;
+        background: rgba(17,17,24,0.96); padding: 24px; border: 1px solid var(--color-border); border-radius: 20px; box-shadow: var(--shadow-card);
+      }
+      .hero .container { grid-template-columns: 1fr; }
+      .hero-visual { grid-column: 1; grid-row: auto; min-height: 0; }
+      .saas-grid { grid-template-columns: 1fr; }
+      .product-stack { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .header-inner { min-height: 68px; padding: 0 18px; }
+      .site-brand { font-size: 14px; gap: 9px; white-space: normal; }
+      .brand-mark { width: 36px; height: 36px; min-width: 36px; }
+      .hero { padding-top: 58px; padding-bottom: 58px; }
+      .hero h1 { font-size: 36px; }
+      .hero-intro { font-size: 18px; }
+      .section { padding: 62px 0; }
+      .card, .method-picker, .accordion-item { padding: 24px; }
+      .tilt-card { transform: none !important; }
+      .saas-actions, .section div[style*="justify-content: center"] { flex-direction: column; }
+    }
+
+  </style>
+</head>
+<body>
+<div id="reading-progress"></div>
+<header id="site-header">
+<div class="header-inner">
+<a aria-label="Email File Encryption Hub" class="site-brand" href="#"><span aria-hidden="true" class="brand-mark"><svg focusable="false" role="img" viewbox="0 0 48 48"><path d="M24 5 38 10v11c0 10.5-5.8 17.8-14 22-8.2-4.2-14-11.5-14-22V10l14-5Z" fill="none" stroke="url(#brandHolo)" stroke-linejoin="round" stroke-width="3"></path><path d="M18 24h12v10H18V24Zm3 0v-4a3 3 0 0 1 6 0v4" fill="none" stroke="#E8E8FF" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path><defs><lineargradient id="brandHolo" x1="5" x2="43" y1="5" y2="43"><stop stop-color="#FF0080"></stop><stop offset=".22" stop-color="#FF8C00"></stop><stop offset=".45" stop-color="#FFE600"></stop><stop offset=".68" stop-color="#00FF88"></stop><stop offset=".84" stop-color="#00CFFF"></stop><stop offset="1" stop-color="#A855F7"></stop></lineargradient></defs></svg></span><span>Email File Encryption Hub</span></a>
+<button aria-label="Toggle navigation" class="menu-toggle">☰</button>
+<nav class="nav-links">
+<a href="#overview">Overview</a>
+<a href="#methods">Methods Guide</a>
+<a href="#comparison">Comparison</a>
+<a href="#troubleshooting">Troubleshooting</a>
+<a href="#faq">FAQ</a>
+</nav>
+<a class="header-cta" href="#recommendation">See Our Top Pick →</a>
+</div>
+</header>
+<section class="hero">
+<div class="container">
+<div class="breadcrumb">Guide · Data Security</div>
+<h1 class="scramble-text" data-original-html='How to &lt;span class="holo-text"&gt;Encrypt a File&lt;/span&gt; Before Sending It &lt;span class="holo-text"&gt;via Email&lt;/span&gt;'>How to <span class="holo-text">Encrypt a File</span> Before Sending It <span class="holo-text">via Email</span></h1>
+<p class="hero-intro">Email is inherently insecure for sensitive data. If you need to send financial documents, health records, or confidential business files, attaching them directly is a risk. This guide covers how to encrypt a file for email securely, from native OS tools to professional software.</p>
+<div class="meta-bar">
+<span>Editorial Team</span>
+<span>Updated: May 2026</span>
+<span>8 min read</span>
+</div>
+<div class="quick-answer">
+<span class="qa-label">Quick Answer</span>
+<p>The fastest way to encrypt a file for email is to create a password-protected ZIP archive using built-in OS tools (like Mac's Terminal) or free utilities (like 7-Zip for Windows). For business or highly sensitive data requiring AES-<span class="holo-counter" data-count="256">256</span> standards, use dedicated file encryption software before attaching the file to your email.</p>
+</div>
+<figure class="content-image hero-visual holo-card tilt-card"><img alt="Encrypted file transfer illustration for secure email attachments" decoding="async" loading="lazy" src="https://i.ibb.co/5gxZwh0m/file-transfer.png"/></figure></div>
+</section><div aria-hidden="true" class="prismatic-divider"><svg preserveaspectratio="none" viewbox="0 0 1440 80"><defs><lineargradient id="holoStroke" x1="0%" x2="100%" y1="0%" y2="0%"><stop stop-color="#FF0080"></stop><stop offset=".18" stop-color="#FF8C00"></stop><stop offset=".36" stop-color="#FFE600"></stop><stop offset=".58" stop-color="#00FF88"></stop><stop offset=".78" stop-color="#00CFFF"></stop><stop offset="1" stop-color="#A855F7"></stop></lineargradient></defs><path d="M0,56 C220,12 380,12 620,46 C860,80 1030,78 1440,20"></path></svg></div>
+<!-- S2: TOC -->
+<section class="section section-tint" id="toc">
+<div class="container">
+<div class="card holo-card tilt-card" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+<h3 class="scramble-text" data-original-html="What's in this guide" style="margin-top:0;">What's in this guide</h3>
+<ul style="column-count: 2; column-gap: 40px; list-style-type: none; padding: 0;">
+<li style="margin-bottom: 8px;"><a href="#overview">→ Why email encryption isn't enough</a></li>
+<li style="margin-bottom: 8px;"><a href="#methods">→ Best ways to send encrypted files securely</a></li>
+<li style="margin-bottom: 8px;"><a href="#recommendation">→ The tool we recommend</a></li>
+<li style="margin-bottom: 8px;"><a href="#comparison">→ Methods comparison table</a></li>
+<li style="margin-bottom: 8px;"><a href="#how-to-encrypt-pdf">→ How to send encrypted PDF via email</a></li>
+<li style="margin-bottom: 8px;"><a href="#algorithms">→ Modern encryption algorithms explained</a></li>
+<li style="margin-bottom: 8px;"><a href="#compliance">→ Encryption compliance (HIPAA, GDPR)</a></li>
+<li style="margin-bottom: 8px;"><a href="#faq">→ Frequently asked questions</a></li>
+</ul>
+</div>
+</div>
+</section>
+<!-- S3: Overview -->
+<section class="section" id="overview">
+<div class="container">
+<h2 class="scramble-text" data-original-html="Why You Must Encrypt Files Before Emailing">Why You Must Encrypt Files Before Emailing</h2>
+<p class="lead">Understanding the difference between an encrypted email and an encrypted file.</p>
+<p>A common misconception is that using a <a href="https://websitesecuritystore.com/blog/how-to-secure-an-email-easy-tips-implement/" rel="noopener noreferrer" target="_blank">secure email provider</a> (or relying on standard TLS transit encryption) means your attachments are safe. This is false. While standard email protocols encrypt the <em>transit</em> between servers, the email (and its attachments) sit in plain text on the recipient's server. If their account is compromised, your sensitive file is exposed.</p>
+<p>To truly secure data, you must <strong>encrypt the file itself before uploading it</strong> to the email draft. This is known as "encrypt-before-send." If you learn how to <a href="https://proprivacy.com/guides/encrypt-files-windows" rel="noopener noreferrer" target="_blank">encrypt files to send via email</a> properly, even if the email is intercepted or the destination inbox is hacked, the file remains an unreadable block of data without the decryption key.</p>
+<h3 class="scramble-text" data-original-html="Requirements: What you need before starting">Requirements: What you need before starting</h3>
+<ul>
+<li>The file you want to send (PDF, Word Doc, or a folder to ZIP).</li>
+<li>A secure way to transmit the password/key to the recipient (<strong>Rule #1: Never send the password in the same email as the encrypted file</strong>. Use an encrypted messaging app like Signal or text message).</li>
+<li>Your chosen encryption method (detailed below).</li>
+</ul><figure class="content-image holo-card tilt-card"><img alt="Sensitive personal data protected before sending through email" decoding="async" loading="lazy" src="https://i.ibb.co/Zpt5NfpT/sensitive-personal-data.jpg"/></figure>
+</div>
+</section>
+<!-- S4: Methods Guide -->
+<section class="section section-tint" id="methods">
+<div class="container">
+<h2 class="scramble-text" data-original-html="Best Ways to Send Encrypted Files Securely">Best Ways to Send Encrypted Files Securely</h2>
+<!-- Interactive: Method Picker -->
+<div class="method-picker holo-card tilt-card">
+<h3 class="scramble-text" data-original-html="Which method should you use?" style="margin-top:0;">Which method should you use?</h3>
+<p>Select your scenario to see our recommendation.</p>
+<div class="picker-options">
+<button class="picker-btn" data-target="res-casual">Casual/Personal</button>
+<button class="picker-btn" data-target="res-business">Business/Compliance</button>
+<button class="picker-btn" data-target="res-large">Large Folders</button>
+</div>
+<div class="picker-result" id="res-casual">
+<span class="badge badge-med">Recommendation</span>
+<h4 style="margin:12px 0;">Password-Protected ZIP</h4>
+<p>For casual personal use (like sending a tax form to an accountant once), a simple <a href="https://kongotech.org/how-to-password-protect-a-zip-file/" rel="noopener noreferrer" target="_blank">password-protected ZIP</a> using 7-Zip or Mac Terminal is sufficient.</p>
+</div>
+<div class="picker-result" id="res-business">
+<span class="badge badge-high">Recommendation</span>
+<h4 style="margin:12px 0;">Dedicated AES-<span class="holo-counter" data-count="256">256</span> Software</h4>
+<p>If you are handling client data, PHI, or business secrets, you need auditable AES-<span class="holo-counter" data-count="256">256</span> encryption. Use dedicated encryption software like Folder Lock.</p>
+</div>
+<div class="picker-result" id="res-large">
+<span class="badge badge-high">Recommendation</span>
+<h4 style="margin:12px 0;">Encrypted Archive Software</h4>
+<p>Email limits attachments to 25MB. For large folders, you must encrypt the folder using software, upload the encrypted vault to cloud storage (Google Drive/OneDrive), and email the link.</p>
+</div>
+</div><figure class="content-image holo-card tilt-card"><img alt="Windows file explorer showing files prepared for encryption" decoding="async" loading="lazy" src="https://i.ibb.co/35v0S8cp/Windows-file-explorer.jpg"/></figure>
+<h3 class="scramble-text" data-original-html="Method 1: Encrypt a ZIP File for Email Attachments (Windows &amp; Mac)" id="method-zip">Method 1: Encrypt a ZIP File for Email Attachments (Windows &amp; Mac)</h3>
+<p>Zipping files is the most universal method to encrypt a file to send via email. It compresses the file and applies a password layer.</p>
+<h4>On Windows (using 7-Zip - Free/Open Source):</h4>
+<ol>
+<li>Download and install 7-Zip (Windows does not natively support creating password-protected ZIPs).</li>
+<li>Right-click the file or folder you want to send.</li>
+<li>Select <strong>7-Zip &gt; Add to archive...</strong></li>
+<li>Under the "Encryption" section on the right, enter a strong password.</li>
+<li>Ensure the Method is set to <strong>AES-<span class="holo-counter" data-count="256">256</span></strong>.</li>
+<li>Click OK. Attach the resulting .zip file to your email.</li>
+</ol>
+<h4>On Mac (using Terminal - Native):</h4>
+<p>Mac users can use the built-in terminal to create an encrypted zip without third-party tools.</p>
+<div class="code-block">
+<button class="copy-btn" onclick="copyCode(this, 'mac-zip-code')">Copy</button>
+<pre id="mac-zip-code"><code>zip -er archive_name.zip /path/to/file_or_folder</code></pre>
+</div>
+<p>You will be prompted to enter and verify a password. The resulting .zip is ready to email.</p>
+<div class="card holo-card tilt-card">
+<h4>Pros &amp; Cons of ZIP Encryption</h4>
+<p><strong>Best for:</strong> One-off transfers to tech-savvy recipients.</p>
+<p><strong>Limitations:</strong> Recipient needs extraction software (like 7-Zip or WinZip) if AES-<span class="holo-counter" data-count="256">256</span> is used, as native Windows extraction sometimes struggles with AES-zipped files. The file names inside the zip are often visible even without the password.</p>
+</div>
+<h3 class="scramble-text" data-original-html="Method 2: Encrypt Word Document Before Emailing" id="method-office">Method 2: Encrypt Word Document Before Emailing</h3>
+<p>If you only need to send a Microsoft Office file, you can encrypt it directly within the application.</p>
+<ol>
+<li>Open the document in Word, Excel, or PowerPoint.</li>
+<li>Go to <strong>File &gt; Info &gt; Protect Document</strong>.</li>
+<li>Select <strong>Encrypt with Password</strong>.</li>
+<li>Enter a password and click OK. Save the document.</li>
+</ol>
+<p><strong>Limitations:</strong> Only protects Office files. Older versions of Office use weak encryption (RC4) which is easily cracked. Ensure you are using Office 2016 or newer (which uses AES).</p>
+</div>
+</section>
+<!-- S5: Premium SaaS Moment (Layer 2 Transition) -->
+<section class="saas-moment" id="recommendation">
+<div class="container-wide">
+<div class="saas-grid">
+<div>
+<h2 class="scramble-text" data-original-html="The Tool We Recommend for Most Users">The Tool We Recommend for Most Users</h2>
+<p class="lead" style="margin-bottom: 24px;">Of all the methods we've covered, manual zipping is tedious, and Office passwords are limited. For businesses and individuals who regularly need to encrypt files, folders, or USB drives, we recommend dedicated software.</p>
+<p style="margin-bottom: 32px;">We recommend <strong><a href="https://cloudstorageinfo.org/folder-lock-review" rel="noopener noreferrer" target="_blank">Folder Lock</a></strong>. It applies military-grade AES-<span class="holo-counter" data-count="256">256</span> encryption and features a dedicated email attachment wizard that packages your sensitive documents into secure, standalone executable archives. Because it supports seamless synchronization across Windows, macOS, Android, and iOS, you and your recipients can securely manage files from any hardware endpoint.</p>
+<div style="margin-bottom: 32px;">
+<span class="feature-chip holo-badge">AES-256 Encryption</span>
+<span class="feature-chip">Email-Ready Portable Lockers</span>
+<span class="feature-chip">Mac, PC &amp; Mobile Support</span>
+</div>
+<div class="saas-actions">
+<a class="btn btn-solid" href="https://www.newsoftwares.net/download/folderlock10-en/folderlock10-en.exe" rel="noopener noreferrer" style="background:#fff; color:var(--color-saas-bg);" target="_blank">Try Folder Lock Free →</a>
+<a class="btn btn-outline" href="https://store.newsoftwares.net/?add=fl10" rel="noopener noreferrer" style="border-color:rgba(255,255,255,0.5); color:#fff;" target="_blank">View Full Version</a>
+</div>
+</div>
+<div class="mockup-container holo-card tilt-card"><div class="product-stack"><figure class="content-image holo-card tilt-card"><img alt="Folder Lock 10 main dashboard for file encryption" decoding="async" loading="lazy" src="https://i.ibb.co/ynCZTHt1/folder-lock-10-main-screen.png"/></figure><figure class="content-image holo-card tilt-card"><img alt="Folder Lock 10 software boxshot for secure file protection" decoding="async" loading="lazy" src="https://i.ibb.co/xSFPPmSR/folder-lock-10-boxshot-new-4.png"/></figure></div></div>
+</div>
+</div>
+</section><div aria-hidden="true" class="prismatic-divider"><svg preserveaspectratio="none" viewbox="0 0 1440 80"><defs><lineargradient id="holoStroke" x1="0%" x2="100%" y1="0%" y2="0%"><stop stop-color="#FF0080"></stop><stop offset=".18" stop-color="#FF8C00"></stop><stop offset=".36" stop-color="#FFE600"></stop><stop offset=".58" stop-color="#00FF88"></stop><stop offset=".78" stop-color="#00CFFF"></stop><stop offset="1" stop-color="#A855F7"></stop></lineargradient></defs><path d="M0,56 C220,12 380,12 620,46 C860,80 1030,78 1440,20"></path></svg></div>
+<!-- S8: Methods Comparison Table -->
+<section class="section" id="comparison">
+<div class="container-wide">
+<h2 class="scramble-text" data-original-html="Comparison: How to Encrypt a File for Email">Comparison: How to Encrypt a File for Email</h2>
+<p>Review the tradeoffs between different file encryption approaches.</p>
+<div style="overflow-x: auto;">
+<table class="comparison-table">
+<thead>
+<tr>
+<th>Method</th>
+<th>Difficulty</th>
+<th>Algorithm</th>
+<th>Best For</th>
+<th>Limitations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MS Office Built-in</strong></td>
+<td><span class="badge badge-high">Very Easy</span></td>
+<td>AES (newer versions)</td>
+<td>Single Word/Excel files</td>
+<td>Only works on Office docs; older versions are insecure.</td>
+</tr>
+<tr>
+<td><strong>Mac Terminal ZIP</strong></td>
+<td><span class="badge badge-med">Moderate</span></td>
+<td>Varies</td>
+<td>Mac users sending single files</td>
+<td>Requires command line knowledge; recipient might have extraction issues.</td>
+</tr>
+<tr>
+<td><strong>7-Zip (Windows)</strong></td>
+<td><span class="badge badge-high">Easy</span></td>
+<td>AES-256</td>
+<td>Casual file transfers</td>
+<td>File names inside archive remain visible; UI is dated.</td>
+</tr>
+<tr class="highlight-row">
+<td><strong>Folder Lock (Software)</strong></td>
+<td><span class="badge badge-high">Easy</span></td>
+<td>AES-256</td>
+<td>Business, Compliance, Frequent use</td>
+<td>Paid software (though free trial exists).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<figure class="content-image holo-card tilt-card"><img alt="Data security software platform comparison illustration" decoding="async" loading="lazy" src="https://i.ibb.co/k24BgXfS/data-security-software-platforms.png"/></figure></div>
+</section>
+<!-- S14: Deep Dive Sections -->
+<section class="section section-tint" id="how-to-encrypt-pdf">
+<div class="container">
+<h2 class="scramble-text" data-original-html="How to Send Encrypted PDF via Email">How to Send Encrypted PDF via Email</h2>
+<p>PDFs are the most common format for sensitive attachments like contracts or financial statements. If you don't want to use a ZIP file, you can <a href="https://www.filecenter.com/blog/best-pdf-encryption-software/" rel="noopener noreferrer" target="_blank">encrypt the PDF</a> directly.</p>
+<h3 class="scramble-text" data-original-html="Using Adobe Acrobat">Using Adobe Acrobat</h3>
+<ol>
+<li>Open the PDF in Adobe Acrobat Pro (the free Reader version cannot encrypt).</li>
+<li>Go to <strong>Tools &gt; Protect &gt; Encrypt &gt; Encrypt with Password</strong>.</li>
+<li>Check "Require a password to open the document."</li>
+<li>Enter a strong password. Choose Acrobat X or later for AES-256 encryption.</li>
+<li>Save the PDF. You can now safely attach it to your email.</li>
+</ol>
+<p><strong>Pro Tip:</strong> Mac users can encrypt PDFs for free using the built-in Preview app. Open the PDF in Preview, choose <em>File &gt; Export</em>, check the <em>Encrypt</em> box, and enter a password.</p>
+<figure class="content-image holo-card tilt-card"><img alt="Protected documents illustration for encrypted PDF attachments" decoding="async" loading="lazy" src="https://i.ibb.co/Kj8Tw5y3/Protecting-Documents.jpg"/></figure></div>
+</section>
+<section class="section" id="algorithms">
+<div class="container">
+<h2 class="scramble-text" data-original-html="How Modern Encryption Algorithms Work">How Modern Encryption Algorithms Work</h2>
+<p>When you research <a href="https://psbios.com/file-encryption-explained/" rel="noopener noreferrer" target="_blank">data encryption software</a> or how to encrypt a file on Windows 11, you will inevitably encounter terms like AES, symmetric, and asymmetric. Here is a plain-English breakdown.</p>
+<h3 class="scramble-text" data-original-html="Symmetric vs Asymmetric Encryption — What You Need to Know">Symmetric vs Asymmetric Encryption — What You Need to Know</h3>
+<p><strong>Symmetric encryption</strong> uses the <em>same</em> key (password) to lock and unlock the file. When you password-protect a ZIP file or use Folder Lock, you are using symmetric encryption. It is fast and excellent for files at rest or preparing files for email (provided you communicate the password via a separate channel).</p>
+<p><strong>Asymmetric encryption</strong> (like PGP or S/MIME) uses a pair of keys: a public key to lock, and a private key to unlock. This is how encrypted email protocols work. It solves the password-sharing problem but is notoriously difficult to set up for non-technical users.</p>
+<h3 class="scramble-text" data-original-html="How RSA Solves the Password-Sharing Dilemma">How RSA Solves the Password-Sharing Dilemma</h3>
+<p>Advanced security tools like Folder Lock bridge the gap between these two methods by integrating RSA cryptography alongside standard file locking. By utilizing public and private key infrastructure, you can authorize specific colleagues to decrypt your shared files using their own unique credentials. This completely eliminates the dangerous practice of sending a password via text message alongside your encrypted email attachment.</p>
+<h3 class="scramble-text" data-original-html="What is AES-256 and why is it the standard?">What is AES-256 and why is it the standard?</h3>
+<p>Advanced Encryption Standard (AES) with a 256-bit key length is the cryptographic standard adopted by the U.S. government. A 256-bit key means there are 2<sup>256</sup> possible combinations. To brute-force guess an AES-256 key, current supercomputers would take billions of years. When choosing file encryption software, verifying it uses AES-256 is mandatory.</p>
+<figure class="content-image holo-card tilt-card"><img alt="Encryption explainer graphic showing secure data protection concepts" decoding="async" loading="lazy" src="https://i.ibb.co/gZ8Tcbqc/what-is-encryption-complete-explainer-for-beginners.jpg"/></figure></div>
+</section>
+<section class="section section-tint" id="compliance">
+<div class="container">
+<h2 class="scramble-text" data-original-html="Encryption Compliance Requirements for Businesses">Encryption Compliance Requirements for Businesses</h2>
+<p>If you are asking "what is encryption software for small business?", the answer is usually driven by regulatory compliance.</p>
+<h3 class="scramble-text" data-original-html="Encryption for compliance (HIPAA, GDPR, PCI-DSS)">Encryption for compliance (HIPAA, GDPR, PCI-DSS)</h3>
+<p>If your business handles Protected Health Information (PHI) or European citizen data, emailing unencrypted files is a severe violation.</p>
+<ul>
+<li><strong>HIPAA:</strong> Requires access controls and encryption for data in transit and at rest. You cannot email patient records in plain text.</li>
+<li><strong>GDPR:</strong> Article 32 mandates implementing appropriate technical measures, specifically naming encryption, to secure personal data.</li>
+</ul>
+<p>For these environments, manual zipping is often insufficient because it lacks auditing. Dedicated email encryption software for business use provides the necessary logging and standardized AES-256 application required for compliance audits.</p>
+<figure class="content-image holo-card tilt-card"><img alt="Audit trail and data logging illustration for encryption compliance" decoding="async" loading="lazy" src="https://i.ibb.co/W4JBsgpd/audit-trail-data-logging.jpg"/></figure></div>
+</section>
+<section class="section" id="cloud">
+<div class="container">
+<h2 class="scramble-text" data-original-html="How to Encrypt Files Before Uploading to Cloud">How to Encrypt Files Before Uploading to Cloud</h2>
+<p>Email attachments are limited to 20-25MB. To send larger files, you must use <a href="https://www.windowscentral.com/how-encrypt-data-storing-it-cloud-and-why-you-should" rel="noopener noreferrer" target="_blank">cloud storage</a> (Google Drive, OneDrive). However, uploading unencrypted sensitive files to the cloud means the cloud provider has access to them.</p>
+<p>To securely share large files: encrypt the files locally on your computer <em>first</em>. Professional utilities like Folder Lock offer native, built-in integrations for major cloud platforms. You can create designated, fortified vaults directly linked to your Dropbox, OneDrive, or Google Drive accounts. The software scrambles the data on your local hard drive <em>before</em> a single byte is synced over the internet, ensuring that a compromised cloud server cannot expose your plain-text information. You can then safely email the sharing link to your recipient.</p>
+<figure class="content-image holo-card tilt-card"><img alt="Secured cloud storage illustration for encrypted large file sharing" decoding="async" loading="lazy" src="https://i.ibb.co/ks87GMGG/Secured-Cloud.jpg"/></figure></div>
+</section><div aria-hidden="true" class="prismatic-divider"><svg preserveaspectratio="none" viewbox="0 0 1440 80"><defs><lineargradient id="holoStroke" x1="0%" x2="100%" y1="0%" y2="0%"><stop stop-color="#FF0080"></stop><stop offset=".18" stop-color="#FF8C00"></stop><stop offset=".36" stop-color="#FFE600"></stop><stop offset=".58" stop-color="#00FF88"></stop><stop offset=".78" stop-color="#00CFFF"></stop><stop offset="1" stop-color="#A855F7"></stop></lineargradient></defs><path d="M0,56 C220,12 380,12 620,46 C860,80 1030,78 1440,20"></path></svg></div>
+<!-- S12: Free vs Full Pricing Comparison -->
+<section class="section section-tint" id="pricing">
+<div class="container">
+<h2 class="scramble-text" data-original-html="Folder Lock Pricing: Free vs. Pro Capabilities">Folder Lock Pricing: Free vs. Pro Capabilities</h2>
+<p class="lead">Understanding the storage and device limits before you commit.</p>
+<p>While you can begin securing your email attachments immediately at no cost, understanding the structural differences between the free and paid tiers helps determine the right fit for your workflow.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 32px;">
+<div class="card holo-card tilt-card">
+<h3 class="scramble-text" data-original-html="Free Evaluation Version" style="margin-top:0;">Free Evaluation Version</h3>
+<p>Ideal for users who occasionally need to send a secure file or protect a single small directory.</p>
+<ul style="list-style-type: none; padding: 0;">
+<li style="margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><strong>Vault Size:</strong> Limited to <span class="holo-counter" data-count="1">1</span> Gigabyte of secured storage</li>
+<li style="margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><strong>Cross-Device Sync:</strong> Connects up to <span class="holo-counter" data-count="2">2</span> separate devices</li>
+<li style="margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><strong>Access:</strong> Core file encryption and secure wallet features</li>
+<li style="margin-bottom: 12px; color: var(--color-meta-text);"><strong>Restrictions:</strong> Lacks advanced folder-hiding, permanent file shredding, and portable USB locker creation</li>
+</ul>
+</div>
+<div class="card holo-card tilt-card" style="border: 2px solid var(--color-primary-accent); position: relative;">
+<div style="position: absolute; top: -12px; right: 24px; background: var(--color-primary-accent); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;">RECOMMENDED</div>
+<h3 class="scramble-text" data-original-html="Folder Lock Pro" style="margin-top:0;">Folder Lock Pro</h3>
+<p>Built for professionals handling sensitive client data across multiple operating systems.</p>
+<div style="font-family: var(--font-heading); font-size: 32px; font-weight: 800; margin: 16px 0;">$39.95 <span style="font-size: 16px; font-weight: 400; font-family: var(--font-body); color: var(--color-meta-text);">/ one-time fee</span></div>
+<ul style="list-style-type: none; padding: 0;">
+<li style="margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><strong>Vault Size:</strong> Unlimited secure storage</li>
+<li style="margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><strong>Cross-Device Sync:</strong> Connects up to <span class="holo-counter" data-count="5">5</span> endpoints simultaneously</li>
+<li style="margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px;"><strong>Secure Sharing:</strong> Authorize unlimited users via RSA keys</li>
+<li style="margin-bottom: 12px; color: var(--color-body-text);"><strong>Advanced Tools:</strong> Includes file shredder, privacy history cleaner, and portable executable lockers</li>
+</ul>
+</div>
+</div>
+<figure class="content-image holo-card tilt-card"><img alt="Folder Lock Pro boxshot for professional AES encryption" decoding="async" loading="lazy" src="https://i.ibb.co/Psv235rk/folder-lock-10-pro-boxshot-160x220.png"/></figure></div>
+</section>
+<!-- S16: Troubleshooting -->
+<section class="section section-tint" id="troubleshooting">
+<div class="container">
+<h2 class="scramble-text" data-original-html="Troubleshooting: Secure Email File Transfer">Troubleshooting: Secure Email File Transfer</h2>
+<div class="accordion-item holo-card tilt-card">
+<button aria-expanded="false" class="accordion-header" onclick="toggleAccordion(this)">
+          Recipient cannot open the encrypted ZIP file
+        </button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+<p><strong>Cause:</strong> If you used AES-256 encryption when creating the ZIP, the native Windows extraction tool often fails to open it, giving an obscure error.</p>
+<p><strong>Fix:</strong> Advise the recipient to download a free tool like 7-Zip to extract the file, as it fully supports modern AES encryption.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item holo-card tilt-card">
+<button aria-expanded="false" class="accordion-header" onclick="toggleAccordion(this)">
+          Email server blocks the encrypted attachment
+        </button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+<p><strong>Cause:</strong> Some corporate firewalls and email providers (like Gmail) scan attachments for malware. Because <a href="https://www.avast.com/c-password-protect-file-folder-windows" rel="noopener noreferrer" target="_blank">encrypted files</a> cannot be scanned, they are sometimes blocked by default.</p>
+<p><strong>Fix:</strong> Change the file extension from .zip to something else (like .z_p) and instruct the recipient to change it back. Alternatively, upload the encrypted file to a cloud service and email the link.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item holo-card tilt-card">
+<button aria-expanded="false" class="accordion-header" onclick="toggleAccordion(this)">
+          Forgot your Folder Lock password?
+        </button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+<p><strong>Note on Recovery:</strong> True AES-256 encryption does not have a "backdoor." If you forget the master password used to encrypt a file, the data is unrecoverable by design. Check for any saved recovery keys generated during initial setup, or contact vendor support with your license details to see if account-level recovery is possible.</p>
+</div>
+</div>
+</div>
+<figure class="content-image holo-card tilt-card"><img alt="Security monitoring illustration for encrypted attachment troubleshooting" decoding="async" loading="lazy" src="https://i.ibb.co/DPBbtBCG/Monitoring-Attempts.jpg"/></figure></div>
+</section>
+<!-- S20: FAQ -->
+<section class="section" id="faq">
+<div class="container">
+<h2 class="scramble-text" data-original-html="Frequently Asked Questions">Frequently Asked Questions</h2>
+<div class="accordion-item holo-card tilt-card">
+<button aria-expanded="false" class="accordion-header" onclick="toggleAccordion(this)">
+          What is the best way to send encrypted files via email?
+        </button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+<p>The most reliable method is to use file encryption software (or a password-protected ZIP archive) to encrypt the file locally, attach the encrypted file to the email, and send the password to the recipient via a separate secure channel (like SMS or Signal).</p>
+</div>
+</div>
+</div>
+<div class="accordion-item holo-card tilt-card">
+<button aria-expanded="false" class="accordion-header" onclick="toggleAccordion(this)">
+          Can I encrypt a file without special software?
+        </button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+<p>Yes. You can use native OS tools like Mac's Terminal to create encrypted ZIPs, or use Microsoft Office's built-in document protection for Word and Excel files. However, for bulk files, dedicated software is much faster.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item holo-card tilt-card">
+<button aria-expanded="false" class="accordion-header" onclick="toggleAccordion(this)">
+          What encryption method does Gmail use for attachments?
+        </button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+<p>Gmail uses TLS (Transport Layer Security) to encrypt the connection between your computer and Google's servers, and between Google and the recipient's server (if supported). It does <em>not</em> encrypt the file itself at rest in the inbox. This is why you must encrypt sensitive files before attaching them.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item holo-card tilt-card">
+<button aria-expanded="false" class="accordion-header" onclick="toggleAccordion(this)">
+          Is password protecting a file the same as encrypting it?
+        </button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+<p>Not always. Simple password protection might just place a software 'lock' on the file without scrambling the data, making it easy to bypass. True encryption (like AES-256) scrambles the underlying data into ciphertext, using the password as the cryptographic key.</p>
+</div>
+</div>
+</div>
+<div class="accordion-item holo-card tilt-card">
+<button aria-expanded="false" class="accordion-header" onclick="toggleAccordion(this)">
+          Can you encrypt a USB drive?
+        </button>
+<div class="accordion-content">
+<div class="accordion-content-inner">
+<p>Yes. If you prefer to send files physically rather than via email, you can use built-in tools like Windows BitLocker, or dedicated software like USB Secure, to encrypt the entire flash drive before mailing or handing it over.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- S19: Related Products -->
+<section class="section section-tint">
+<div class="container">
+<h2 class="scramble-text" data-original-html="Other Security Tools from the Same Developer">Other Security Tools from the Same Developer</h2>
+<p>These tools are developed by NewSoftwares.net, the same team behind our top file encryption recommendation.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 32px;">
+<div class="card holo-card tilt-card"><figure class="content-image holo-card"><img alt="USB Secure product boxshot for portable drive protection" decoding="async" loading="lazy" src="https://i.ibb.co/dJX03kDG/usb-secure-product-box-screenshot.jpg"/></figure>
+<h4 style="margin-top:0;">USB Secure</h4>
+<p style="font-size: 15px;">Portable password protection for USB drives. Protects your portable media without requiring admin rights on the host PC.</p>
+<a href="https://www.newsoftwares.net/usb-secure/" rel="noopener noreferrer" style="font-size: 14px; font-weight: 700;" target="_blank">Learn more →</a>
+</div>
+<div class="card holo-card tilt-card"><figure class="content-image holo-card"><img alt="Cloud Secure boxshot for encrypted cloud folder protection" decoding="async" loading="lazy" src="https://i.ibb.co/PBv0CDc/cloud-secure-boxshot.png"/></figure>
+<h4 style="margin-top:0;">Cloud Secure</h4>
+<p style="font-size: 15px;">Lock and encrypt your Dropbox, Google Drive, and OneDrive folders locally before they sync to the cloud.</p>
+<a href="https://www.newsoftwares.net/cloud-secure/" rel="noopener noreferrer" style="font-size: 14px; font-weight: 700;" target="_blank">Learn more →</a>
+</div>
+<div class="card holo-card tilt-card"><figure class="content-image holo-card"><img alt="Folder Protect for Windows product image for endpoint file protection" decoding="async" loading="lazy" src="https://i.ibb.co/RTVcfd3m/folder-protect-for-windows.jpg"/></figure>
+<h4 style="margin-top:0;">Folder Protect</h4>
+<p style="font-size: 15px;">Advanced endpoint security to instantly lock, hide, or set read-only permissions on files, folders, and drives.</p>
+<a href="https://www.newsoftwares.net/folder-protect/" rel="noopener noreferrer" style="font-size: 14px; font-weight: 700;" target="_blank">Learn more →</a>
+</div>
+</div>
+</div>
+</section>
+<!-- S22: Final Verdict -->
+<section class="section" style="border-top: 1px solid var(--color-border); padding-top: 64px; padding-bottom: 80px;">
+<div class="container" style="text-align: center;">
+<h2 class="scramble-text" data-original-html="Our Verdict" style="border:none; margin-top:0;">Our Verdict</h2>
+<p style="max-width: 600px; margin: 0 auto 32px; font-size: 18px;">Email is a transit mechanism, not a vault. Relying on your email provider's standard transit encryption is insufficient for compliance or true data security. To protect your sensitive attachments, always use the encrypt-before-send method. For casual use, a password-protected ZIP works. For business use, professional AES-256 software is the only reliable choice.</p>
+<div style="display: flex; gap: 16px; justify-content: center;">
+<a class="btn btn-outline" href="https://www.newsoftwares.net/download/folderlock10-en/folderlock10-en.exe" rel="noopener noreferrer" target="_blank">Try Folder Lock Free →</a>
+<a class="btn btn-outline" href="https://store.newsoftwares.net/?add=fl10" rel="noopener noreferrer" target="_blank">Get the Full Version →</a>
+</div>
+</div>
+</section>
+<footer>
+<div class="container-wide">
+<div class="footer-grid">
+<div>
+<div aria-label="Email File Encryption Hub" class="site-brand" style="color: #fff; margin-bottom: 16px;"><span aria-hidden="true" class="brand-mark"><svg focusable="false" role="img" viewbox="0 0 48 48"><path d="M24 5 38 10v11c0 10.5-5.8 17.8-14 22-8.2-4.2-14-11.5-14-22V10l14-5Z" fill="none" stroke="url(#brandHolo)" stroke-linejoin="round" stroke-width="3"></path><path d="M18 24h12v10H18V24Zm3 0v-4a3 3 0 0 1 6 0v4" fill="none" stroke="#E8E8FF" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path><defs><lineargradient id="brandHolo" x1="5" x2="43" y1="5" y2="43"><stop stop-color="#FF0080"></stop><stop offset=".22" stop-color="#FF8C00"></stop><stop offset=".45" stop-color="#FFE600"></stop><stop offset=".68" stop-color="#00FF88"></stop><stop offset=".84" stop-color="#00CFFF"></stop><stop offset="1" stop-color="#A855F7"></stop></lineargradient></defs></svg></span><span>Email File Encryption Hub</span></div>
+<p>The complete guide to secure file transmission and encryption best practices.</p>
+</div>
+<div>
+<h4 style="color: #fff; margin-bottom: 16px; font-size: 16px;">Guide Sections</h4>
+<ul style="list-style: none; padding: 0;">
+<li style="margin-bottom: 8px;"><a href="#overview">Why Encrypt Before Sending</a></li>
+<li style="margin-bottom: 8px;"><a href="#methods">Encryption Methods Guide</a></li>
+<li style="margin-bottom: 8px;"><a href="#comparison">Software Comparison</a></li>
+<li style="margin-bottom: 8px;"><a href="#faq">Frequently Asked Questions</a></li>
+</ul>
+</div>
+<div>
+<h4 style="color: #fff; margin-bottom: 16px; font-size: 16px;">Resources</h4>
+<ul style="list-style: none; padding: 0;">
+<li style="margin-bottom: 8px;"><a href="https://newsoftwares.net/" rel="noopener noreferrer" target="_blank">NewSoftwares.net</a></li>
+<li style="margin-bottom: 8px;"><a href="#">Privacy Policy</a></li>
+<li style="margin-bottom: 8px;"><a href="#">Terms of Use</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-disclosure">
+<p>This site operates as an independent editorial resource. Some links may earn a referral commission at no cost to you. Product recommendations reflect editorial judgment and independent assessment.</p>
+<p>Folder Lock and related tools are developed by <a href="https://newsoftwares.net/" rel="noopener noreferrer" target="_blank">NewSoftwares.net</a>.</p>
+<p style="margin-top: 16px;">© 2026 EmailFileEncryptionHub</p>
+</div>
+</div>
+</footer>
+<!-- Schema -->
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "EmailFileEncryptionHub",
+          "description": "The complete guide to encrypting files for email transmission."
+        },
+        {
+          "@type": "WebPage",
+          "name": "How to Encrypt a File Before Sending It via Email",
+          "description": "Learn how to encrypt files for email securely. Step-by-step guides for PDFs, Word docs, and ZIPs to protect sensitive attachments before sending."
+        },
+        {
+          "@type": "Article",
+          "headline": "How to Encrypt a File Before Sending It via Email",
+          "datePublished": "2026-05-23T08:00:00Z",
+          "dateModified": "2026-05-23T08:00:00Z",
+          "author": {
+            "@type": "Organization",
+            "name": "Editorial Team"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "NewSoftwares.net"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Guide"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Data Security"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "How to Encrypt a File Before Sending It via Email"
+            }
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "name": "How to create an encrypted ZIP file on Mac via Terminal",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "text": "Open the Terminal application on your Mac."
+            },
+            {
+              "@type": "HowToStep",
+              "text": "Type the command: zip -er archive_name.zip /path/to/file_or_folder"
+            },
+            {
+              "@type": "HowToStep",
+              "text": "Press Enter. You will be prompted to enter a password."
+            },
+            {
+              "@type": "HowToStep",
+              "text": "Verify the password. The encrypted ZIP file will be created."
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is the best way to send encrypted files via email?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The most reliable method is to use file encryption software (or a password-protected ZIP archive) to encrypt the file locally, attach the encrypted file to the email, and send the password to the recipient via a separate secure channel (like SMS or Signal)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I encrypt a file without special software?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. You can use native OS tools like Mac's Terminal to create encrypted ZIPs, or use Microsoft Office's built-in document protection for Word and Excel files. However, for bulk files, dedicated software is much faster."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What encryption method does Gmail use for attachments?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Gmail uses TLS (Transport Layer Security) to encrypt the connection between your computer and Google's servers, and between Google and the recipient's server (if supported). It does not encrypt the file itself at rest in the inbox. This is why you must encrypt sensitive files before attaching them."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+<!-- JS -->
+<script defer="">
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const header = document.getElementById('site-header');
+      const progressBar = document.getElementById('reading-progress');
+      const navLinks = document.querySelector('.nav-links');
+
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 10) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+        progressBar.style.width = scrolled + "%";
+      });
+
+      const menuToggle = document.querySelector('.menu-toggle');
+      if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
+      }
+
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (navLinks) navLinks.classList.remove('active');
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      const pickerBtns = document.querySelectorAll('.picker-btn');
+      const pickerResults = document.querySelectorAll('.picker-result');
+      pickerBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          pickerBtns.forEach(b => b.classList.remove('active'));
+          pickerResults.forEach(r => r.classList.remove('visible'));
+          btn.classList.add('active');
+          const target = document.getElementById(btn.getAttribute('data-target'));
+          if (target) target.classList.add('visible');
+        });
+      });
+
+      const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      if (isFinePointer) {
+        document.querySelectorAll('.tilt-card, .holo-card').forEach(card => {
+          card.addEventListener('mousemove', (event) => {
+            const rect = card.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const px = (x / rect.width) - 0.5;
+            const py = (y / rect.height) - 0.5;
+            const angle = Math.atan2(y - rect.height / 2, x - rect.width / 2) * 180 / Math.PI + 90;
+            card.style.setProperty('--rx', `${(-py * 8).toFixed(2)}deg`);
+            card.style.setProperty('--ry', `${(px * 8).toFixed(2)}deg`);
+            card.style.setProperty('--mouse-angle', `${angle.toFixed(1)}deg`);
+          });
+          card.addEventListener('mouseleave', () => {
+            card.style.setProperty('--rx', '0deg');
+            card.style.setProperty('--ry', '0deg');
+          });
+        });
+      } else {
+        document.querySelectorAll('.holo-card, .btn').forEach(el => {
+          el.addEventListener('touchstart', () => el.classList.add('tap-highlight'), { passive: true });
+          el.addEventListener('touchend', () => setTimeout(() => el.classList.remove('tap-highlight'), 350), { passive: true });
+        });
+      }
+
+      const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*@';
+      function scrambleHeading(el) {
+        if (el.dataset.scrambled === 'true') return;
+        el.dataset.scrambled = 'true';
+        const originalHTML = el.dataset.originalHtml || el.innerHTML;
+        const finalText = el.textContent;
+        let frame = 0;
+        const totalFrames = 30;
+        const timer = setInterval(() => {
+          const progress = frame / totalFrames;
+          el.textContent = finalText.split('').map((char, i) => {
+            if (char === ' ') return ' ';
+            return i / finalText.length < progress ? char : randomChars[Math.floor(Math.random() * randomChars.length)];
+          }).join('');
+          frame++;
+          if (frame > totalFrames) {
+            clearInterval(timer);
+            el.innerHTML = originalHTML;
+          }
+        }, 20);
+      }
+
+      const headingObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (window.matchMedia('(max-width: 620px)').matches) {
+              entry.target.style.opacity = 1;
+              entry.target.style.transform = 'translateY(0)';
+            } else {
+              scrambleHeading(entry.target);
+            }
+            headingObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.45 });
+
+      document.querySelectorAll('.scramble-text').forEach(el => {
+        if (window.matchMedia('(max-width: 620px)').matches) {
+          el.style.opacity = 0;
+          el.style.transform = 'translateY(10px)';
+          el.style.transition = 'opacity .45s ease, transform .45s ease';
+        }
+        headingObserver.observe(el);
+      });
+
+      const counterObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          const target = parseInt(el.dataset.count || el.textContent, 10);
+          if (!Number.isFinite(target)) return;
+          el.classList.add('counting');
+          let start = null;
+          const duration = 850;
+          function tick(ts) {
+            if (!start) start = ts;
+            const progress = Math.min((ts - start) / duration, 1);
+            const value = Math.round(target * progress);
+            el.textContent = value;
+            if (progress < 1) requestAnimationFrame(tick);
+            else {
+              el.textContent = target;
+              el.classList.remove('counting');
+              el.classList.add('done');
+            }
+          }
+          requestAnimationFrame(tick);
+          counterObserver.unobserve(el);
+        });
+      }, { threshold: 0.6 });
+
+      document.querySelectorAll('.holo-counter').forEach(el => counterObserver.observe(el));
+
+      const dividerObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            dividerObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+      document.querySelectorAll('.prismatic-divider').forEach(el => dividerObserver.observe(el));
+    });
+
+    function toggleAccordion(button) {
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', !isExpanded);
+      const content = button.nextElementSibling;
+      if (!isExpanded) content.style.maxHeight = content.scrollHeight + "px";
+      else content.style.maxHeight = "0";
+    }
+
+    function copyCode(btn, elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerText;
+        btn.innerText = 'Copied!';
+        setTimeout(() => { btn.innerText = originalText; }, 2000);
+      });
+    }
+
+  </script>
+</body>
+</html>
