@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://how-to-encrypt-file-before-sending-email.vercel.app/sitemap.xml
